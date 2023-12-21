@@ -15,7 +15,7 @@ class CreateDespesasTable extends Migration
     {
         Schema::create('despesas', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 191)->nullable();
+            $table->string('descricao', 191)->nullable();
             $table->date('data')->nullable();
             $table->float('valor')->nullable();
             $table->unsignedBigInteger('user_id')->nullable();
