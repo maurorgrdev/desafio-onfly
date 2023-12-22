@@ -4,10 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreDespesaRequest;
 use App\Http\Requests\UpdateDespesaRequest;
+use App\Http\Resources\DespesaResource;
 use App\Models\Despesa;
+use App\Repositories\DespesaRepository;
+use Exception;
 
 class DespesaController extends Controller
 {
+    protected $despesaRepository;
+
+    public function __construct(DespesaRepository $despesaRepository)
+    {   
+        $this->despesaRepository = $despesaRepository;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -15,17 +25,13 @@ class DespesaController extends Controller
      */
     public function index()
     {
-        //
-    }
+        try {
+            $despesas = $this->despesaRepository->all();
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+            return $this->sendResponse(DespesaResource::collection($despesas));
+        } catch (Exception $e) {
+            return $this->sendError($e->getMessage(), null, 400);
+        }
     }
 
     /**
@@ -36,7 +42,15 @@ class DespesaController extends Controller
      */
     public function store(StoreDespesaRequest $request)
     {
-        //
+        try {
+            $dados = $request->all();
+
+            $nova_despesa = $this->despesaRepository->create($dados);
+
+            return $this->sendResponse(new DespesaResource($nova_despesa), null, 201);
+        } catch (Exception $e) {
+            return $this->sendError($e->getMessage(), null, 400); 
+        }
     }
 
     /**
@@ -45,20 +59,15 @@ class DespesaController extends Controller
      * @param  \App\Models\Despesa  $despesa
      * @return \Illuminate\Http\Response
      */
-    public function show(Despesa $despesa)
+    public function show($id)
     {
-        //
-    }
+        try {
+            $despesa = $this->despesaRepository->find_by_id($id);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Despesa  $despesa
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Despesa $despesa)
-    {
-        //
+            return $this->sendResponse(new DespesaResource($despesa));
+        } catch (Exception $e) {
+            return $this->sendError($e->getMessage(), null, 400);
+        }
     }
 
     /**
@@ -68,9 +77,17 @@ class DespesaController extends Controller
      * @param  \App\Models\Despesa  $despesa
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateDespesaRequest $request, Despesa $despesa)
+    public function update(UpdateDespesaRequest $request, $id)
     {
-        //
+        try {
+            $dados = $request->all();
+
+            $despesa_atualizada = $this->despesaRepository->update($dados, $id);
+
+            return $this->sendResponse(new DespesaResource($despesa_atualizada));
+        } catch (Exception $e) {
+            return $this->sendError($e->getMessage(), null, 400); 
+        }
     }
 
     /**
@@ -79,8 +96,14 @@ class DespesaController extends Controller
      * @param  \App\Models\Despesa  $despesa
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Despesa $despesa)
+    public function destroy($id)
     {
-        //
+        try {
+            $this->despesaRepository->delete($id);
+
+            return $this->sendResponse(null, 'Registro excluído com sucesso', 200);
+        } catch (Exception $e) {
+            return $this->sendError($e->getMessage(), null, 400); 
+        }
     }
 }
