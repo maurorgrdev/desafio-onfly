@@ -8,6 +8,9 @@ use App\Http\Resources\DespesaResource;
 use App\Models\Despesa;
 use App\Repositories\DespesaRepository;
 use Exception;
+use Illuminate\Support\Facades\Gate;
+
+// use Illuminate\Auth\Access\Gate;
 
 class DespesaController extends Controller
 {
@@ -64,7 +67,10 @@ class DespesaController extends Controller
         try {
             $despesa = $this->despesaRepository->find_by_id($id);
 
+            $this->authorize('despesa_show', $despesa);
+
             return $this->sendResponse(new DespesaResource($despesa));
+            
         } catch (Exception $e) {
             return $this->sendError($e->getMessage(), null, 400);
         }

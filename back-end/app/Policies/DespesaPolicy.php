@@ -5,6 +5,7 @@ namespace App\Policies;
 use App\Models\Despesa;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Auth\Access\Response;
 
 class DespesaPolicy
 {
@@ -28,9 +29,11 @@ class DespesaPolicy
      * @param  \App\Models\Despesa  $despesa
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, Despesa $despesa)
+    public function despesa_show(User $user, Despesa $despesa)
     {
-        //
+        return $user->id === $despesa->user_id
+            ? Response::allow()
+            : Response::deny('Permissão negada');
     }
 
     /**
