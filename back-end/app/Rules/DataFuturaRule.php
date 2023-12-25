@@ -38,6 +38,6 @@ class DataFuturaRule implements Rule
      */
     public function message()
     {
-        return 'A Data deve ser futura.';
+        return 'Data deve ser futura.';
     }
 }

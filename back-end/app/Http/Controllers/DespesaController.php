@@ -8,6 +8,7 @@ use App\Http\Resources\DespesaResource;
 use App\Models\Despesa;
 use App\Repositories\DespesaRepository;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
 // use Illuminate\Auth\Access\Gate;
@@ -29,7 +30,9 @@ class DespesaController extends Controller
     public function index()
     {
         try {
-            $despesas = $this->despesaRepository->all();
+            $user_auth = Auth::user();
+
+            $despesas = $this->despesaRepository->all_by_user_id($user_auth->id);
 
             return $this->sendResponse(DespesaResource::collection($despesas));
         } catch (Exception $e) {
@@ -67,7 +70,7 @@ class DespesaController extends Controller
         try {
             $despesa = $this->despesaRepository->find_by_id($id);
 
-            $this->authorize('despesa_show', $despesa);
+            $this->authorize('show', $despesa);
 
             return $this->sendResponse(new DespesaResource($despesa));
             
@@ -88,6 +91,8 @@ class DespesaController extends Controller
         try {
             $dados = $request->all();
 
+            $this->authorize('update', $this->despesaRepository->find_by_id($id));
+
             $despesa_atualizada = $this->despesaRepository->update($dados, $id);
 
             return $this->sendResponse(new DespesaResource($despesa_atualizada));
@@ -105,6 +110,8 @@ class DespesaController extends Controller
     public function destroy($id)
     {
         try {
+            $this->authorize('delete', $this->despesaRepository->find_by_id($id));
+
             $this->despesaRepository->delete($id);
 
             return $this->sendResponse(null, 'Registro excluído com sucesso', 200);

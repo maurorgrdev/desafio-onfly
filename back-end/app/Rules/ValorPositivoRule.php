@@ -35,6 +35,6 @@ class ValorPositivoRule implements Rule
      */
     public function message()
     {
-        return 'O Valor deve ser maior que 0.';
+        return 'Valor deve ser maior que 0.';
     }
 }

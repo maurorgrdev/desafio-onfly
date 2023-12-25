@@ -43,4 +43,19 @@ class StoreDespesaRequest extends FormRequest
                 ]
         ];
     }
+
+    /**
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            'data.required' => 'Data é obrigatório',
+            'descricao.required' => 'Descrição é obrigatório',
+            'valor.required' => 'Valor é obrigatório',
+            'descricao.max' => 'Descrição máxima é de 191 caracteres',
+        ];
+    }
 }
