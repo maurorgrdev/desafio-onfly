@@ -6,20 +6,23 @@ use App\Http\Requests\StoreDespesaRequest;
 use App\Http\Requests\UpdateDespesaRequest;
 use App\Http\Resources\DespesaResource;
 use App\Models\Despesa;
+use App\Notifications\NovaDespesaNotify;
 use App\Repositories\DespesaRepository;
+use App\Repositories\UserRepository;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 
-// use Illuminate\Auth\Access\Gate;
 
 class DespesaController extends Controller
 {
     protected $despesaRepository;
+    protected $user_repository;
 
-    public function __construct(DespesaRepository $despesaRepository)
+    public function __construct(DespesaRepository $despesaRepository, UserRepository $user_repository)
     {   
         $this->despesaRepository = $despesaRepository;
+        $this->user_repository = $user_repository;
     }
 
     /**
@@ -31,9 +34,9 @@ class DespesaController extends Controller
     {
         try {
             $user_auth = Auth::user();
-
+            
             $despesas = $this->despesaRepository->all_by_user_id($user_auth->id);
-
+            
             return $this->sendResponse(DespesaResource::collection($despesas));
         } catch (Exception $e) {
             return $this->sendError($e->getMessage(), null, 400);
@@ -49,9 +52,16 @@ class DespesaController extends Controller
     public function store(StoreDespesaRequest $request)
     {
         try {
+            $user_auth = Auth::user();
+
+            $user_dto = $this->user_repository->find_by_id($user_auth->id);
+
             $dados = $request->all();
+            $dados['user_id'] = $user_dto->id;
 
             $nova_despesa = $this->despesaRepository->create($dados);
+
+            $user_dto->notify(new NovaDespesaNotify());
 
             return $this->sendResponse(new DespesaResource($nova_despesa), null, 201);
         } catch (Exception $e) {
