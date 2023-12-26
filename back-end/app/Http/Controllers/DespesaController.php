@@ -52,16 +52,12 @@ class DespesaController extends Controller
     public function store(StoreDespesaRequest $request)
     {
         try {
-            $user_auth = Auth::user();
-
-            $user_dto = $this->user_repository->find_by_id($user_auth->id);
+            $user_auth_id = Auth::id();
 
             $dados = $request->all();
-            $dados['user_id'] = $user_dto->id;
+            $dados['user_id'] = $user_auth_id;
 
             $nova_despesa = $this->despesaRepository->create($dados);
-
-            $user_dto->notify(new NovaDespesaNotify());
 
             return $this->sendResponse(new DespesaResource($nova_despesa), null, 201);
         } catch (Exception $e) {

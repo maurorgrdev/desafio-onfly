@@ -38,7 +38,6 @@
 
     methods: {
         clickConfirm(){
-            this.showDialog = false
             this.$emit('confirmDialog');
         },
 

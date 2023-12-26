@@ -3,6 +3,9 @@
 namespace App\Observers;
 
 use App\Models\Despesa;
+use App\Notifications\NovaDespesaNotify;
+use App\Repositories\UserRepository;
+use Illuminate\Support\Facades\Auth;
 
 class DespesaObserver
 {
@@ -14,8 +17,12 @@ class DespesaObserver
      */
     public function created(Despesa $despesa)
     {
-        // $user
-        // $this->queueMailable($despesa);
+        $user_auth = Auth::user();
+        $user_repository = new UserRepository();
+
+        $user_dto = $user_repository->find_by_id($user_auth->id);
+
+        $user_dto->notify(new NovaDespesaNotify());
     }
 
     /**

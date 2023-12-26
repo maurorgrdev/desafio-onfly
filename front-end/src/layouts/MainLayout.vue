@@ -12,7 +12,7 @@
         />
 
         <q-toolbar-title>
-          Street App
+          Despesa App
         </q-toolbar-title>
 
         <div>V {{ $q.version }}</div>
@@ -34,7 +34,7 @@
         </q-item-label>
         <q-item clickable @click="$router.replace('/despesa')">
           <q-item-section avatar>
-            <q-avatar icon="groups" color="primary" text-color="white" />
+            <q-avatar icon="analytics" color="primary" text-color="white" />
           </q-item-section>
           <q-item-section>
             <q-item-label > <span class="text-weight-bold"> Despesas </span></q-item-label>
