@@ -62,7 +62,7 @@ class DespesaPolicy
      * @param  \App\Models\Despesa  $despesa
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, Despesa $despesa)
+    public function update_despesa(User $user, Despesa $despesa)
     {
         return $user->id === $despesa->user_id
             ? Response::allow()

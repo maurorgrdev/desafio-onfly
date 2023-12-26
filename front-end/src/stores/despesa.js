@@ -21,7 +21,8 @@ export const useDespesaStore = defineStore("despesa", {
       getDespesasToTable(state){
         const despesaTemp = state.despesas.map((despesa) => {
             return  {
-                ...despesa
+                ...despesa,
+                data: moment(despesa.data, 'YYYY-MM-DD').format('DD/MM/YYYY'),
             }
         });
         
@@ -72,13 +73,38 @@ export const useDespesaStore = defineStore("despesa", {
         }
       },
 
-      async editDespesa(data){
+      async editDespesa(despesa, codigo){
         try {
-          const response = await api.patch(`/despesa/${data.id}`, data);
+          const user = useUsuarioStore()
 
-          return response.data;
+          let dados ={
+            ...despesa,
+            data: moment(despesa.data, 'DD/MM/YYYY').format('YYYY-MM-DD'),
+            user_id: user.usuario.id
+          }
+
+          const response = await api.put(`/despesa/${codigo}`, dados);
+
+          return response;
+        
         } catch (error) {
-          return error;
+          
+          return error.response;
+        
+        }
+      },
+
+      async deleteDespesa(codigo){
+        try {
+
+          const response = await api.delete(`/despesa/${codigo}`);
+
+          return response;
+        
+        } catch (error) {
+          
+          return error.response;
+        
         }
       }
     },

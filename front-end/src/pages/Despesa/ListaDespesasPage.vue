@@ -1,26 +1,45 @@
 <template>
+    <!-- Dialog para deletar uma despesa -->
+    <dialog-delete-component
+        :show="showDialogDeletaDespesa"
+        :titulo="titulo_dialog_delete"
+        :descricao="descricao_dialog_delete"
+        v-on:close-dialog="callBackCloseDeletaDespesa"
+        v-on:confirm-dialog="callBackConfirmDeleteDespesa"
+    >
 
-    <!-- <edita-despesa-dialog-page :show="showDialogEditaDespesa">
+    </dialog-delete-component>
 
-    </edita-despesa-dialog-page> -->
+    <!-- Dialog para editar uma despesa -->
+    <edita-despesa-dialog-page
+        :show="showDialogEditaDespesa"
+        v-on:close-dialog="callBackCloseEditaDespesa" 
+        v-on:create-success="callBackEditaDespesaSuccess"
+        :despesa_original="despesa_selecionada_acao"
+    />
 
+    <!-- Dialog para cadastrar uma nova despesa -->
     <nova-despesa-dialog-page 
         :show="showDialogNovaDespesa"
         v-on:close-dialog="callBackCloseNovaDespesa" 
         v-on:create-success="callBackNovaDespesaSuccess"
     />
 
-    <!-- <visualiza-despesa-dialog-page :show="showDialogVisualizaDespesa">
+    <!-- Dialog para visualizar uma despesa -->
+    <visualiza-despesa-dialog-page
+        :show="showDialogVisualizaDespesa"
+        v-on:close-dialog="callBackCloseVisualizaDespesa" 
+        :despesa_original="despesa_selecionada_acao"
+    />
 
-    </visualiza-despesa-dialog-page> -->
-
+    <!-- Contém tabela principal com as despesas dos usuários -->
     <q-page>   
         <div class="q-pa-xl">
             <q-table 
                 flat 
                 bordered 
                 title="Treats" 
-                :rows="despesaStore.getDespesas" 
+                :rows="despesaStore.getDespesasToTable" 
                 :columns="columns" 
                 row-key="id"    
                 table-header-class="bg-blue-5 text-white"
@@ -42,7 +61,7 @@
                         <q-td key="actions" :props="props">
                             <q-btn color="blue-5" class="q-mr-md" size="sm" round icon="mode_edit" @click="openDialogEditaDespesa(props.row)"><q-tooltip> Editar Despesa </q-tooltip></q-btn>
                             <q-btn color="blue-5" class="q-mr-md" size="sm" round icon="visibility" @click="openDialogVisualizaDespesa(props.row)"><q-tooltip> Visualizar Despesa </q-tooltip></q-btn>
-                            <q-btn color="blue-5" class="q-mr-md" size="sm" round icon="delete" @click="openDialogDeleteUsuario(props.row)"><q-tooltip> Deletar Despesa </q-tooltip></q-btn>
+                            <q-btn color="blue-5" class="q-mr-md" size="sm" round icon="delete" @click="openDialogDeletaDespesa(props.row)"><q-tooltip> Deletar Despesa </q-tooltip></q-btn>
 
                         </q-td>
                     </q-tr>
@@ -59,22 +78,27 @@
 
 <script>
 import { useDespesaStore } from 'src/stores/despesa'
-// import EditaDespesaDialogPage from './EditaDespesaDialogPage.vue'
+import useNotify from 'src/composables/UseNotify'
+import EditaDespesaDialogPage from './EditaDespesaDialogPage.vue'
 import NovaDespesaDialogPage from './NovaDespesaDialogPage.vue'
-// import VisualizaDespesaDialogPage from './VisualizaDespesaDialogPage.vue'
+import VisualizaDespesaDialogPage from './VisualizaDespesaDialogPage.vue'
+import DialogDeleteComponent from 'src/components/DialogDeleteComponent.vue'
 
 export default {
     components: {
-        // EditaDespesaDialogPage, 
-        // VisualizaDespesaDialogPage, 
-        NovaDespesaDialogPage
-    },
+    EditaDespesaDialogPage,
+    VisualizaDespesaDialogPage, 
+    NovaDespesaDialogPage,
+    DialogDeleteComponent
+},
 
     setup() {
         const despesaStore = useDespesaStore();
+        const notify = useNotify();
 
         return {
             despesaStore,
+            notify
         }
     },
 
@@ -99,26 +123,81 @@ export default {
                 { name: 'actions', align: 'center', label: 'Ações'},
             ],
 
+            despesa_selecionada_acao: {},
+
             showDialogEditaDespesa: false,
             showDialogNovaDespesa: false,
             showDialogVisualizaDespesa: false,
+            showDialogDeletaDespesa: false,
+
+            titulo_dialog_delete: '',
+            descricao_dialog_delete: '',
         }
     },
 
     methods: {
-        openDialogEditaDespesa(){
+        // Funções para gerenciar Dialog de editar despesa
+        async openDialogEditaDespesa(despesa_edit){
+            this.despesa_selecionada_acao = {
+                ...despesa_edit    
+            }
 
+            this.showDialogEditaDespesa = true;
         },
 
-        openDialogDeletaDespesa(){
-
+        callBackCloseEditaDespesa()
+        {
+            this.showDialogEditaDespesa = false
         },
 
-        openDialogVisualizaDespesa(){
+        async callBackEditaDespesaSuccess()
+        {
+            await this.despesaStore.loadDespesas();
 
+            this.showDialogEditaDespesa = false
         },
 
-        // Funções para gerenciar Dialog de cadastrar despesas
+        // Funções para gerenciar Dialog de deletar despesa
+        openDialogDeletaDespesa(despesa){
+            this.despesa_selecionada_acao = {...despesa}
+
+            this.showDialogDeletaDespesa = true
+
+            this.titulo_dialog_delete = 'Deletar Despesa'
+            this.descricao_dialog_delete = "Deseja mesmo deletar esta despesa ?"
+        },
+
+        callBackCloseDeletaDespesa()
+        {
+            this.showDialogDeletaDespesa = false
+        },
+
+        async callBackConfirmDeleteDespesa()
+        {
+            await this.despesaStore.deleteDespesa(this.despesa_selecionada_acao.id);
+
+            this.notify.notifySuccess();
+
+            await this.despesaStore.loadDespesas();
+
+            this.showDialogDeletaDespesa = false
+        },
+
+        // Funções para gerenciar Dialog de visualizar despesa
+        openDialogVisualizaDespesa(despesa_show){
+            this.despesa_selecionada_acao = {
+                ...despesa_show    
+            }
+
+            this.showDialogVisualizaDespesa = true
+        },
+
+        callBackCloseVisualizaDespesa()
+        {
+            this.showDialogVisualizaDespesa = false
+        },
+
+        // Funções para gerenciar Dialog de cadastrar despesa
         openDialogNovaDespesa(){
             this.showDialogNovaDespesa = true;
         },

@@ -101,7 +101,9 @@ class DespesaController extends Controller
         try {
             $dados = $request->all();
 
-            $this->authorize('update', $this->despesaRepository->find_by_id($id));
+            $despesa_dto = $this->despesaRepository->find_by_id($id);
+
+            $this->authorize('update_despesa', $despesa_dto);
 
             $despesa_atualizada = $this->despesaRepository->update($dados, $id);
 

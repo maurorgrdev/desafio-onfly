@@ -23,11 +23,11 @@ abstract class BaseRepository{
     }
 
     public function update(array $dados, $id){
-        $this->model->where('id', $id)->first();
-        $this->model->fill($dados);
-        $this->model->save();
+        $this->model->where('id', $id)->update(
+            $dados
+        );
 
-        return $this->model;
+        return $dados;
     }
 
     public function delete($id){
