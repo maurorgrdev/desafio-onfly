@@ -84,24 +84,21 @@ $ composer install
 $ php artisan key:generate
 ```
 
-Para gerar as tabelas no banco de dados e povoalo, execute os seguintes comandos:
+Um usário admin ja foi pré cadastrado para que tenha acesso ao sistema:
 ```bash
-$ php artisan migrate
-$ php artisan db:seed
+$ email: admin@gmail.com
+$ senha: admin
 ```
 
-Será gerado um usuário com as seguintes credênciais:
+Deixe executando o comando abaixo para que os usuários recebam a notificação de despesas por e-mail:
+```bash
+$ php artisan queue:work
+```
 
 E por fim inicie a API:
 ```bash
 $ php artisan serve --port=8000
 ```
-
-Em um outro terminal deixe executando o comando abaixo para que os usuários recebam a notificação de despesas por e-mail:
-```bash
-$ php artisan queue:work
-```
-
 
 Pronto! A API já está funcionando na porta indicada.
 
