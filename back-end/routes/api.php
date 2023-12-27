@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Route;
 // });
 Route::middleware('auth:sanctum')->group(function () { 
     Route::resource('/despesa', DespesaController::class);
+    Route::resource('/user', UserController::class);
 });
 
 Route::post('/login', [LoginController::class, 'login']);
-Route::resource('/user', UserController::class);

@@ -161,10 +161,10 @@ export default {
         openDialogDeletaDespesa(despesa){
             this.despesa_selecionada_acao = {...despesa}
 
-            this.showDialogDeletaDespesa = true
-
             this.titulo_dialog_delete = 'Deletar Despesa'
             this.descricao_dialog_delete = "Deseja mesmo deletar esta despesa ?"
+
+            this.showDialogDeletaDespesa = true
         },
 
         callBackCloseDeletaDespesa()

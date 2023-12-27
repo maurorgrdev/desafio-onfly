@@ -40,7 +40,7 @@ export const useUsuarioStore = defineStore("usuario", {
 
         async loadUsuarios(){
             try {
-                const result = await api.get('/users')
+                const result = await api.get('/user')
 
                 this.usuarios = result.data.data
 
@@ -53,7 +53,19 @@ export const useUsuarioStore = defineStore("usuario", {
 
         async addUsuario(data){
             try {
-              const response = await api.post('/users', data);
+              const response = await api.post('/user', data);
+    
+              return response;
+    
+            } catch (error) {
+              
+              return error.response;
+            }
+          },
+
+          async deleteUsuario(id_user){
+            try {
+              const response = await api.delete(`/user/${id_user}`);
     
               return response;
     

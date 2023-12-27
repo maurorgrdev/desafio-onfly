@@ -40,6 +40,14 @@
             <q-item-label > <span class="text-weight-bold"> Despesas </span></q-item-label>
           </q-item-section>
         </q-item>
+        <q-item clickable @click="$router.replace('/user')">
+          <q-item-section avatar>
+            <q-avatar icon="groups" color="primary" text-color="white" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label > <span class="text-weight-bold"> Usuários </span></q-item-label>
+          </q-item-section>
+        </q-item>
       </q-list>
     </q-drawer>
 
