@@ -125,8 +125,8 @@ $ quasar dev
 
 A Lista de Tarefas deverá aparecer no seu navegador.
 
-This is a challenge by Coodesh
-
 ## ✍️ Authors <a name = "authors"></a>
 
 - [@maurorgrdev](https://github.com/maurorgrdev) - Developer - mauroroger2020@gmail.com
+
+This is a challenge by Coodesh
